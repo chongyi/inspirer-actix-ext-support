@@ -4,7 +4,6 @@ use std::sync::Arc;
 
 use actix_web::web::ServiceConfig;
 use ahash::AHashMap;
-use anyhow::Result;
 
 /// 应用模块注册器 trait
 pub trait ModuleRegister: Sync + Send + Any {
@@ -126,10 +125,11 @@ impl ModuleProvider {
         self.1.clear();
     }
 
-    pub async fn register<T, F>(&mut self, factory: F) -> Result<()>
+    pub async fn register<T, F, E>(&mut self, factory: F) -> anyhow::Result<()>
         where
-                for<'a> F: Wrapped<'a, T>,
+                for<'a> F: Wrapped<'a, T, E>,
                 T: Send + Sync + Clone + 'static,
+                E: std::error::Error + Send + Sync + 'static,
     {
         let result = factory.call(self).await?;
         self.insert(result);
@@ -141,17 +141,19 @@ impl ModuleProvider {
     }
 }
 
-pub trait Wrapped<'a, T>
+pub trait Wrapped<'a, T, E>
     where T: Send + Sync + Clone + 'static,
+          E: std::error::Error + Send + Sync
 {
-    type Res: Future<Output=Result<T>>;
+    type Res: Future<Output=Result<T, E>>;
     fn call(self, s: &'a ModuleProvider) -> Self::Res;
 }
 
-impl<'a, T, F, R> Wrapped<'a, T> for F
+impl<'a, T, F, E, R> Wrapped<'a, T, E> for F
     where F: Fn(&'a ModuleProvider) -> R,
-          R: Future<Output=Result<T>> + 'a,
+          R: Future<Output=Result<T, E>> + 'a,
           T: Send + Sync + Clone + 'static,
+          E: std::error::Error + Send + Sync
 {
     type Res = R;
 
@@ -199,5 +201,27 @@ mod tests {
         assert!(!module_provider.contains::<u8>());
         assert!(!module_provider.contains::<u16>());
         assert!(!module_provider.contains::<u32>());
+    }
+
+    #[tokio::test]
+    async fn test_factory() {
+        let mut module_provider = ModuleProvider::new();
+
+        async fn register_u8(ctx: &ModuleProvider) -> std::io::Result<u8>{
+            Ok(1)
+        }
+
+        async fn register_u16(ctx: &ModuleProvider) -> std::io::Result<u16>{
+            Ok(2)
+        }
+
+        module_provider.register(register_u8).await.unwrap();
+        module_provider.register(register_u16).await.unwrap();
+
+        assert!(module_provider.contains::<u8>());
+        assert!(module_provider.contains::<u16>());
+
+        assert_eq!(1, module_provider.get::<u8>().unwrap());
+        assert_eq!(2, module_provider.get::<u16>().unwrap());
     }
 }
