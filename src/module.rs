@@ -127,7 +127,7 @@ impl ModuleProvider {
 
     pub async fn register<T, F, E>(&mut self, factory: F) -> anyhow::Result<()>
         where
-                for<'a> F: Wrapped<'a, T, E>,
+                for<'a> F: ModuleFactoryFn<'a, T, E>,
                 T: Send + Sync + Clone + 'static,
                 E: std::error::Error + Send + Sync + 'static,
     {
@@ -141,7 +141,7 @@ impl ModuleProvider {
     }
 }
 
-pub trait Wrapped<'a, T, E>
+pub trait ModuleFactoryFn<'a, T, E>
     where T: Send + Sync + Clone + 'static,
           E: std::error::Error + Send + Sync
 {
@@ -149,7 +149,7 @@ pub trait Wrapped<'a, T, E>
     fn call(self, s: &'a ModuleProvider) -> Self::Res;
 }
 
-impl<'a, T, F, E, R> Wrapped<'a, T, E> for F
+impl<'a, T, F, E, R> ModuleFactoryFn<'a, T, E> for F
     where F: Fn(&'a ModuleProvider) -> R,
           R: Future<Output=Result<T, E>> + 'a,
           T: Send + Sync + Clone + 'static,
