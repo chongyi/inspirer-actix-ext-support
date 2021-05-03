@@ -1,11 +1,10 @@
 #[macro_use]
 extern crate log;
 
-pub mod module;
+pub mod config;
+mod module_provider;
 
-pub mod preludes {
-    pub use crate::module::{ModuleFactoryFn, ModuleProvider, ModuleContainer};
-}
+pub use module_provider::mysql;
 
 #[cfg(test)]
 mod tests {

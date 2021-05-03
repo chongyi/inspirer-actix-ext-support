@@ -4,6 +4,12 @@ version = "0.1.0"
 authors = ["chongyi <xpz3847878@163.com>"]
 edition = "2018"
 
+[workspace]
+members = [
+    ".",
+    "inspirer-actix-modules/database-sqlx"
+]
+
 [dependencies]
 ahash = "0.7.0"
 actix-web = "*"
