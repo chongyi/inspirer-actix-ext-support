@@ -7,7 +7,7 @@ use ahash::AHashMap;
 use anyhow::Result;
 
 /// 应用模块注册器 trait
-pub trait ApplicationModuleRegister: Sync + Send + Any {
+pub trait ModuleRegister: Sync + Send + Any {
     /// 注册应用模块
     ///
     /// Actix web 框架是通过 ServiceConfig 注册应用内的模块，
@@ -27,12 +27,12 @@ pub struct StandardModuleRegister<T>(pub T);
 impl<T> StandardModuleRegister<T>
     where T: Send + Sync + Clone + 'static
 {
-    pub fn boxed(obj: T) -> Box<dyn ApplicationModuleRegister> {
+    pub fn boxed(obj: T) -> Box<dyn ModuleRegister> {
         Box::new(StandardModuleRegister(obj))
     }
 }
 
-impl<T> ApplicationModuleRegister for StandardModuleRegister<T>
+impl<T> ModuleRegister for StandardModuleRegister<T>
     where T: Send + Sync + Clone + 'static
 {
     fn register(&self, service: &mut ServiceConfig) {
@@ -44,15 +44,15 @@ impl<T> ApplicationModuleRegister for StandardModuleRegister<T>
     }
 }
 
-/// Actix Web 应用模块管理器
+/// Actix Web 应用模块容器
 ///
 /// 应用模块管理器是用于传递应用模块的一个容器。
 #[derive(Clone)]
-pub struct ApplicationModuleManager(Arc<Vec<Box<dyn ApplicationModuleRegister>>>);
+pub struct ModuleContainer(Arc<Vec<Box<dyn ModuleRegister>>>);
 
-impl ApplicationModuleManager {
-    pub fn new(inner: Vec<Box<dyn ApplicationModuleRegister>>) -> Self {
-        ApplicationModuleManager(Arc::new(inner))
+impl ModuleContainer {
+    pub fn new(inner: Vec<Box<dyn ModuleRegister>>) -> Self {
+        ModuleContainer(Arc::new(inner))
     }
 
     /// 获取模块提供者
@@ -73,7 +73,7 @@ impl ApplicationModuleManager {
 #[derive(Clone)]
 struct Module<T: Send + Sync + Clone>(pub T);
 
-pub struct ModuleProvider(AHashMap<TypeId, Box<dyn Any>>, Vec<Box<dyn ApplicationModuleRegister>>);
+pub struct ModuleProvider(AHashMap<TypeId, Box<dyn Any>>, Vec<Box<dyn ModuleRegister>>);
 
 impl ModuleProvider {
     pub fn new() -> Self {
@@ -121,16 +121,9 @@ impl ModuleProvider {
             .contains_key(&TypeId::of::<T>())
     }
 
-    pub fn remove<T>(&mut self) -> Option<T>
-        where T: Send + Sync + Clone + 'static
-    {
-        self.0
-            .remove(&TypeId::of::<T>())
-            .and_then(|boxed| boxed.downcast().ok().map(|inner| *inner))
-    }
-
     pub fn clear(&mut self) {
         self.0.clear();
+        self.1.clear();
     }
 
     pub async fn register<T, F>(&mut self, factory: F) -> Result<()>
@@ -143,8 +136,8 @@ impl ModuleProvider {
         Ok(())
     }
 
-    pub fn into_application_modules(self) -> ApplicationModuleManager {
-        ApplicationModuleManager::new(self.1)
+    pub fn into_module_container(self) -> ModuleContainer {
+        ModuleContainer::new(self.1)
     }
 }
 
