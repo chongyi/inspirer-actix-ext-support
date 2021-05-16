@@ -1,0 +1,9 @@
+[package]
+name = "redis"
+version = "0.1.0"
+authors = ["chongyi <xpz3847878@163.com>"]
+edition = "2018"
+
+[dependencies]
+redis = { version = "0.20.0", features = ["tokio-comp", "streams"] }
+log = "^0.4.0"

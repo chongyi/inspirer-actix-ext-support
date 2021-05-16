@@ -2,6 +2,7 @@
 extern crate log;
 
 pub mod module;
+pub mod config;
 
 pub mod preludes {
     pub use crate::module::{ModuleFactoryFn, ModuleProvider, ModuleContainer};
