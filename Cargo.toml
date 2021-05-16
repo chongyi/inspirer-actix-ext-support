@@ -15,3 +15,8 @@ members = [
 [dependencies]
 inspirer-actix-ext-core = { path = "inspirer-actix-ext-core" }
 inspirer-actix-module-database-sqlx = { path = "inspirer-actix-modules/database-sqlx", optional = true }
+inspirer-actix-module-redis = { path = "inspirer-actix-modules/redis", optional = true }
+
+[features]
+database = ["inspirer-actix-module-database-sqlx"]
+redis = ["inspirer-actix-module-redis"]
