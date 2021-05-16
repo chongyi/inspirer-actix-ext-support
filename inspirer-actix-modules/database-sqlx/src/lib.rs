@@ -25,6 +25,7 @@ pub trait DAO<D: Database> {
 pub mod prelude {
     pub use sqlx;
     pub use crate::DAO;
+    pub use crate::module_provider::mysql;
 }
 
 #[cfg(test)]
