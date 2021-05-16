@@ -1,3 +1,35 @@
+//! 模块组件扩展支持
+//!
+//!
+//! 通过模块扩展注册器进行模块注册我们用于 Actix web 使用的组件。
+//!
+//! ```
+//! use inspirer_actix_ext_core::module::ModuleProvider;
+//!
+//! let mut module_provider = ModuleProvider::new();
+//! module_provider.insert(1);
+//! module_provider.insert(Vec::new());
+//! ```
+//!
+//! 当然我们也可以使用工厂方法，这样更为灵活。同时工厂方法会接收模块注册器
+//! 的引用，便于我们在某些时候获得相关依赖，例如获取建立数据库连接时必要的配置信息。
+//!
+//! ```
+//! use inspirer_actix_ext_core::module::ModuleProvider;
+//! use std::io::Result;
+//!
+//! async fn database_conn_factory(ctx: &ModuleProvider) -> Result<&'static str> {
+//!     // 假设是获取配置文本
+//!     let _config = ctx.get_ref::<String>();
+//!
+//!     // 假设这里返回数据库链接
+//!     Ok("database conn")
+//! }
+//!
+//! let mut module_provider = ModuleProvider::new();
+//! module_provider.register(database_conn_factory);
+//! ```
+
 use std::any::{Any, type_name, TypeId};
 use std::future::Future;
 use std::sync::Arc;

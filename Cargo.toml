@@ -1,5 +1,5 @@
 [package]
-name = "inspirer-actix-ext-support"
+name = "inspirer-actix-ext"
 version = "0.1.0"
 authors = ["chongyi <xpz3847878@163.com>"]
 edition = "2018"
@@ -7,16 +7,11 @@ edition = "2018"
 [workspace]
 members = [
     ".",
+    "inspirer-actix-ext-core",
     "inspirer-actix-modules/database-sqlx",
     "inspirer-actix-modules/redis",
 ]
 
 [dependencies]
-ahash = "0.7.0"
-actix-web = "*"
-log = "^0.4.0"
-futures = "0.3.12"
-anyhow = "^1.0.38"
-
-[dev-dependencies]
-tokio = { version = "1", features = ["full"] }
+inspirer-actix-ext-core = { path = "inspirer-actix-ext-core" }
+inspirer-actix-module-database-sqlx = { path = "inspirer-actix-modules/database-sqlx", optional = true }

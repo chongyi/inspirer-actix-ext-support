@@ -2,7 +2,7 @@ pub mod mysql {
     use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
     use sqlx::{Result, MySqlPool};
 
-    use inspirer_actix_ext_support::preludes::*;
+    use inspirer_actix_ext_core::preludes::*;
 
     use crate::config::DatabaseConfig;
 
