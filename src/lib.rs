@@ -1,4 +1,5 @@
-pub use inspirer_actix_ext_core::preludes::{error, config, service, ModuleProvider, ModuleContainer, ModuleFactoryFn};
+pub use inspirer_actix_ext_core::preludes::{config, service, ModuleProvider, ModuleContainer, ModuleFactoryFn};
+pub use inspirer_actix_ext_core::error;
 
 #[cfg(feature = "database")]
 pub mod database {
