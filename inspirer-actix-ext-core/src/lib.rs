@@ -12,6 +12,7 @@ pub mod config {
 pub mod preludes {
     pub use crate::module::{ModuleFactoryFn, ModuleProvider, ModuleContainer};
     pub use crate::config;
+    pub use crate::service;
 }
 
 #[cfg(test)]
