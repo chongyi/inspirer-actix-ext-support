@@ -5,12 +5,17 @@ pub mod mysql {
     use inspirer_actix_ext_core::preludes::*;
 
     use crate::config::DatabaseConfig;
+    use inspirer_actix_ext_core::config::Config;
 
     pub async fn register(ctx: &ModuleProvider) -> Result<MySqlPool> {
         debug!("Register MySQL database (sqlx) module.");
 
         debug!("Get database config from module provider.");
         let config = ctx.get_ref::<DatabaseConfig>()
+            .cloned()
+            .or_else(|| ctx.get_ref::<Config>()
+                .and_then(|config|
+                    config.get::<DatabaseConfig>("database").ok()))
             .expect("No database connection configuration!")
             .clone();
 

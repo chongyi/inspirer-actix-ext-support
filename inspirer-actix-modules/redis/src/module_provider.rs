@@ -2,11 +2,16 @@ use inspirer_actix_ext_core::preludes::*;
 use crate::config::RedisConfig;
 use redis::{Client, RedisResult};
 use redis::aio::MultiplexedConnection;
+use inspirer_actix_ext_core::config::Config;
 
 pub async fn register_redis_client(ctx: &ModuleProvider) -> RedisResult<Client> {
     debug!("Register Redis module.");
 
     let config = ctx.get_ref::<RedisConfig>()
+        .cloned()
+        .or_else(|| ctx.get_ref::<Config>()
+            .and_then(|config|
+                config.get::<RedisConfig>("redis").ok()))
         .expect("No redis connection configuration!")
         .clone();
 
