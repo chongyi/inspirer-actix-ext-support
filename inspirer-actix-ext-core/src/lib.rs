@@ -13,6 +13,7 @@ pub mod preludes {
     pub use crate::module::{ModuleFactoryFn, ModuleProvider, ModuleContainer};
     pub use crate::config;
     pub use crate::service;
+    pub use crate::error::Error;
 }
 
 #[cfg(test)]
