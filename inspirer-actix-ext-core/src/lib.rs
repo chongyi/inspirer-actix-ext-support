@@ -4,10 +4,8 @@ extern crate log;
 pub mod module;
 pub mod service;
 pub mod error;
+pub mod config;
 
-pub mod config {
-    pub use config::*;
-}
 
 pub mod preludes {
     pub use crate::module::{ModuleFactoryFn, ModuleProvider, ModuleContainer};
