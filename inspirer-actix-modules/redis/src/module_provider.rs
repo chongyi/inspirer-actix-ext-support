@@ -9,9 +9,12 @@ pub async fn register_redis_client(ctx: &ModuleProvider) -> RedisResult<Client> 
 
     let config = ctx.get_ref::<RedisConfig>()
         .cloned()
-        .or_else(|| ctx.get_ref::<Config>()
-            .and_then(|config|
-                config.get::<RedisConfig>("redis").ok()))
+        .or_else(|| {
+            debug!("Module provider is not contain <RedisConfig>, load config from <Config> module.");
+            ctx.get_ref::<Config>()
+                .and_then(|config|
+                    config.get::<RedisConfig>("redis").ok())
+        })
         .expect("No redis connection configuration!")
         .clone();
 
@@ -25,7 +28,7 @@ pub async fn register_redis_multiplexed_connection(ctx: &ModuleProvider) -> Redi
         Some(client) => {
             debug!("Exist redis client, use client create connection.");
             client.get_multiplexed_async_connection().await
-        },
+        }
         None => {
             debug!("Not exist redis client.");
             let client = register_redis_client(ctx).await?;

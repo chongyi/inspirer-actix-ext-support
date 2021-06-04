@@ -13,9 +13,12 @@ pub mod mysql {
         debug!("Get database config from module provider.");
         let config = ctx.get_ref::<DatabaseConfig>()
             .cloned()
-            .or_else(|| ctx.get_ref::<Config>()
-                .and_then(|config|
-                    config.get::<DatabaseConfig>("database").ok()))
+            .or_else(|| {
+                debug!("Module provider is not contain <DatabaseConfig>, load config from <Config> module.");
+                ctx.get_ref::<Config>()
+                    .and_then(|config|
+                        config.get::<DatabaseConfig>("database").ok())
+            })
             .expect("No database connection configuration!")
             .clone();
 
