@@ -9,7 +9,7 @@ use syn::DeriveInput;
 
 mod service;
 
-#[proc_macro_derive(IntoService)]
+#[proc_macro_derive(Service)]
 pub fn service_derive(input: TokenStream) -> TokenStream {
     let input = proc_macro2::TokenStream::from(input);
     let mut input = syn::parse2::<DeriveInput>(input).unwrap();

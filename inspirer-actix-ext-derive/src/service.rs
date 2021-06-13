@@ -43,12 +43,12 @@ pub fn expand_service_derive(
 pub fn expand_from_request_service_derive(input: &mut syn::DeriveInput) -> TokenStream {
     let ident = input.ident.clone();
     quote! {
-        impl FromRequest for #ident {
+        impl actix_web::FromRequest for #ident {
             type Error = actix_web::Error;
-            type Future = Ready<Result<Self, actix_web::Error>>;
+            type Future = futures::future::Ready<Result<Self, actix_web::Error>>;
             type Config = ();
 
-            fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
+            fn from_request(req: &actix_web::HttpRequest, payload: &mut actix_web::dev::Payload) -> Self::Future {
                 ok(#ident::make(req).unwrap())
             }
         }
