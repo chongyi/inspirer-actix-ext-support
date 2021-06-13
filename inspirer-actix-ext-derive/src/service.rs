@@ -49,7 +49,7 @@ pub fn expand_from_request_service_derive(input: &mut syn::DeriveInput) -> Token
             type Config = ();
 
             fn from_request(req: &actix_web::HttpRequest, payload: &mut actix_web::dev::Payload) -> Self::Future {
-                ok(#ident::make(req).unwrap())
+                futures::future::ok(#ident::make(req).unwrap())
             }
         }
     }
