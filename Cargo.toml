@@ -8,12 +8,14 @@ edition = "2018"
 members = [
     ".",
     "inspirer-actix-ext-core",
+    "inspirer-actix-ext-derive",
     "inspirer-actix-modules/database-sqlx",
     "inspirer-actix-modules/redis",
 ]
 
 [dependencies]
 inspirer-actix-ext-core = { path = "inspirer-actix-ext-core" }
+inspirer-actix-ext-derive = { path = "inspirer-actix-ext-derive" }
 inspirer-actix-module-database-sqlx = { path = "inspirer-actix-modules/database-sqlx", optional = true }
 inspirer-actix-module-redis = { path = "inspirer-actix-modules/redis", optional = true }
 

@@ -1,5 +1,9 @@
+#[macro_use]
+extern crate inspirer_actix_ext_derive;
+
 pub use inspirer_actix_ext_core::preludes::{config, service, ModuleProvider, ModuleContainer, ModuleFactoryFn};
 pub use inspirer_actix_ext_core::error;
+pub use inspirer_actix_ext_derive::*;
 
 #[cfg(feature = "database")]
 pub mod database {
