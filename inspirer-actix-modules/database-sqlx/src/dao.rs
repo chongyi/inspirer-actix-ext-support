@@ -140,13 +140,10 @@ impl<T, D> DAO<D> for Update<T>
 }
 
 /// 读取原语结构
-pub struct Get<T, C> {
-    pub condition: C,
-    _target: PhantomData<T>,
-}
+pub struct Get<T> (PhantomData<T>);
 
 #[async_trait]
-impl<T, C, D> DAO<D> for Get<T, By<C>>
+impl<T, C, D> DAO<D> for GetBy<T, C>
     where C: Sync + Send + ReadDAO<D, T>,
           T: Sync + Send,
           D: Database
@@ -160,14 +157,22 @@ impl<T, C, D> DAO<D> for Get<T, By<C>>
     }
 }
 
-/// 条件原语结构
-pub struct By<C>(pub C);
+/// 条件查询原语结构
+pub struct GetBy<T, C> {
+    condition: C,
+    _target: PhantomData<T>
+}
 
-impl<C> By<C> {
-    pub fn get<T>(self) -> Get<T, By<C>> {
-        Get {
-            condition: self,
-            _target: PhantomData,
+impl<T> Get<T> {
+    /// 条件读取
+    ///
+    /// ```
+    /// Get::<Target>::by(condition).run(executor).await;
+    /// ```
+    pub fn by<C>(condition: C) -> GetBy<T, C> {
+        GetBy {
+            condition,
+            _target: PhantomData
         }
     }
 }
