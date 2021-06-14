@@ -44,12 +44,16 @@ pub fn expand_from_request_service_derive(input: &mut syn::DeriveInput) -> Token
     let ident = input.ident.clone();
     quote! {
         impl actix_web::FromRequest for #ident {
-            type Error = actix_web::Error;
-            type Future = futures::future::Ready<Result<Self, actix_web::Error>>;
+            type Error = inspirer_actix_ext::error::Error;
+            type Future = futures::future::Ready<Result<Self, inspirer_actix_ext::error::Error>>;
             type Config = ();
 
             fn from_request(req: &actix_web::HttpRequest, payload: &mut actix_web::dev::Payload) -> Self::Future {
-                futures::future::ok(#ident::make(req).unwrap())
+                match #ident::make(req) {
+                    Ok(result) => futures::future::ok(result),
+                    Err(err) => futures::future::err(err),
+                }
+
             }
         }
     }
