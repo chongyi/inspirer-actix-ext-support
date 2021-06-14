@@ -153,7 +153,7 @@ impl<T, C, D> DAO<D> for GetBy<T, C>
     async fn run<'a, E>(&self, executor: E) -> Self::Result
         where E: Executor<'a, Database=D>
     {
-        self.condition.0.read(executor).await
+        self.condition.read(executor).await
     }
 }
 
