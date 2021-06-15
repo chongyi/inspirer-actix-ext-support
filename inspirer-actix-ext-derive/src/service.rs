@@ -5,7 +5,7 @@ pub fn expand_service_derive(
     input: &mut syn::DeriveInput,
 ) -> TokenStream {
     let ident = input.ident.clone();
-    let (key, field, target) = match &input.data {
+    let result = match &input.data {
         syn::Data::Struct(data_struct) => {
             match &data_struct.fields {
                 syn::Fields::Named(fields_named) => {
@@ -21,23 +21,60 @@ pub fn expand_service_derive(
                         })
                     }
 
-                    (key, field, target)
+                    let block = quote!{
+                        #ident {
+                            #(#field: deps.#key,)*
+                        }
+                    };
+
+                    Some((target, block))
+                },
+                syn::Fields::Unnamed(fields_unnamed) => {
+                    let (mut key, mut target) = (vec![], vec![]);
+                    for (offset, v) in fields_unnamed.unnamed.iter().enumerate() {
+                        key.push(syn::LitInt::new(&format!("{}", offset), proc_macro2::Span::call_site()));
+                        target.push(match &v.ty {
+                            syn::Type::Path(path) => {
+                                path.path.segments.first().unwrap().ident.clone()
+                            }
+                            _ => panic!()
+                        })
+                    }
+
+                    let block = quote!{
+                        #ident (#(deps.#key),*)
+                    };
+
+                    Some((target, block))
                 }
-                _ => panic!()
+                _ => None
             }
-        }
+        },
         _ => panic!()
     };
 
-    quote! {
-        impl IntoService<(#(#target),*,)> for #ident {
-            fn init(deps: (#(#target),*,)) -> Self {
-                #ident {
-                    #(#field: deps.#key,)*
+    match result {
+        Some((target, block)) => {
+            quote! {
+                impl IntoService<(#(#target),*,)> for #ident {
+                    fn init(deps: (#(#target),*,)) -> Self {
+                        #block
+                    }
+                }
+            }
+        },
+        None => {
+            quote! {
+                impl IntoService<()> for #ident {
+                    fn init(deps: ()) -> Self {
+                        #ident
+                    }
                 }
             }
         }
     }
+
+
 }
 
 pub fn expand_from_request_service_derive(input: &mut syn::DeriveInput) -> TokenStream {
