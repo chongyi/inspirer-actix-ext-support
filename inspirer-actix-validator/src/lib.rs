@@ -3,6 +3,8 @@ extern crate serde;
 #[macro_use]
 extern crate validator;
 
+use std::fmt;
+use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 
 use actix_web::{FromRequest, HttpRequest};
@@ -17,6 +19,24 @@ use crate::error::Error;
 pub mod error;
 
 pub struct Validated<T>(pub T);
+
+impl<T> fmt::Debug for Validated<T>
+    where
+        T: fmt::Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self.0)
+    }
+}
+
+impl<T> fmt::Display for Validated<T>
+    where
+        T: fmt::Display,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&self.0, f)
+    }
+}
 
 #[derive(Clone, Default)]
 pub struct ValidateConfig {
@@ -44,6 +64,20 @@ impl ValidateConfig {
 
 macro_rules! validator {
     ($source:ident) => {
+        impl<T> Deref for Validated<$source<T>> {
+            type Target = T;
+
+            fn deref(&self) -> &T {
+                &self.0.deref()
+            }
+        }
+
+        impl<T> DerefMut for Validated<$source<T>> {
+            fn deref_mut(&mut self) -> &mut T {
+                (&mut self.0).deref_mut()
+            }
+        }
+
         impl<T> FromRequest for Validated<$source<T>>
             where
                 T: DeserializeOwned + Validate + 'static,
