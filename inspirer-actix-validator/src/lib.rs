@@ -14,7 +14,7 @@ use futures::future::{err, Future, FutureExt, LocalBoxFuture, ok, TryFutureExt};
 use serde::de::DeserializeOwned;
 pub use validator::*;
 
-use crate::error::Error;
+pub use crate::error::Error;
 
 pub mod error;
 

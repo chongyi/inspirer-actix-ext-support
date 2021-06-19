@@ -5,9 +5,6 @@ pub use inspirer_actix_ext_core::preludes::{config, service, ModuleProvider, Mod
 pub use inspirer_actix_ext_core::error;
 pub use inspirer_actix_ext_derive::*;
 
-#[cfg(feature = "inspirer-actix-validator")]
-pub use inspirer_actix_validator::Validate;
-
 #[cfg(feature = "validator")]
 pub mod validator {
     pub use inspirer_actix_validator::*;
