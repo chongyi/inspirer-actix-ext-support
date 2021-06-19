@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/inspirer-actix-modules/redis/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/inspirer-rs-container/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/inspirer-actix-ext-derive/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/inspirer-actix-validator/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/inspirer-actix-modules/database-sqlx/target" />
     </content>
