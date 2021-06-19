@@ -5,6 +5,11 @@ pub use inspirer_actix_ext_core::preludes::{config, service, ModuleProvider, Mod
 pub use inspirer_actix_ext_core::error;
 pub use inspirer_actix_ext_derive::*;
 
+#[cfg(feature = "validator")]
+pub mod validator {
+    pub use inspirer_actix_validator::*;
+}
+
 #[cfg(feature = "database")]
 pub mod database {
     pub use inspirer_actix_module_database_sqlx::prelude::*;

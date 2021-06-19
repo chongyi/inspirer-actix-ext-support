@@ -1,4 +1,4 @@
-use validator::ValidationError;
+use validator::ValidationErrors;
 use actix_web::error::{JsonPayloadError, QueryPayloadError, UrlencodedError, PathError};
 use actix_web::ResponseError;
 use actix_web::http::StatusCode;
@@ -6,23 +6,17 @@ use std::fmt;
 use std::fmt::{Formatter, Result};
 
 #[derive(Debug)]
-pub enum Error {
-    ValidatorError(ValidationError),
-    JsonPayloadError(JsonPayloadError),
-    QueryPayloadError(QueryPayloadError),
-    UrlencodedError(UrlencodedError),
-    PathError(PathError),
+pub struct Error (ValidationErrors);
+
+impl From<ValidationErrors> for Error {
+    fn from(err: ValidationErrors) -> Self {
+        Error(err)
+    }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self {
-            Error::ValidatorError(err) => writeln!(f, "{}", err),
-            Error::JsonPayloadError(err) => writeln!(f, "{}", err),
-            Error::QueryPayloadError(err) => writeln!(f, "{}", err),
-            Error::UrlencodedError(err) => writeln!(f, "{}", err),
-            Error::PathError(err) => writeln!(f, "{}", err),
-        }
+        writeln!(f, "{}", self.0)
     }
 }
 

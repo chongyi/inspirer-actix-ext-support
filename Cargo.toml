@@ -19,10 +19,12 @@ inspirer-actix-ext-core = { path = "inspirer-actix-ext-core" }
 inspirer-actix-ext-derive = { path = "inspirer-actix-ext-derive" }
 inspirer-actix-module-database-sqlx = { path = "inspirer-actix-modules/database-sqlx", optional = true, default-features = false }
 inspirer-actix-module-redis = { path = "inspirer-actix-modules/redis", optional = true }
+inspirer-actix-validator = { path = "inspirer-actix-validator", optional = true }
 
 [features]
 database = ["inspirer-actix-module-database-sqlx"]
 redis = ["inspirer-actix-module-redis"]
+validator = ["inspirer-actix-validator"]
 runtime-actix-rustls = ["inspirer-actix-module-database-sqlx/runtime-actix-rustls"]
 runtime-actix-native-tls = ["inspirer-actix-module-database-sqlx/runtime-actix-native-tls"]
 runtime-tokio-rustls = ["inspirer-actix-module-database-sqlx/runtime-tokio-rustls"]
