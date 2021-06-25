@@ -49,7 +49,7 @@ impl FromRequest for Service
     type Future = Ready<Result<Self, actix_web::Error>>;
     type Config = ();
 
-    fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
+    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
         ok(Service(req.clone()))
     }
 }

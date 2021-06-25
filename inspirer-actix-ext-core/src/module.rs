@@ -239,11 +239,11 @@ mod tests {
     async fn test_factory() {
         let mut module_provider = ModuleProvider::new();
 
-        async fn register_u8(ctx: &ModuleProvider) -> std::io::Result<u8>{
+        async fn register_u8(_: &ModuleProvider) -> std::io::Result<u8>{
             Ok(1)
         }
 
-        async fn register_u16(ctx: &ModuleProvider) -> std::io::Result<u16>{
+        async fn register_u16(_: &ModuleProvider) -> std::io::Result<u16>{
             Ok(2)
         }
 
