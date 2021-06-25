@@ -1,7 +1,7 @@
 pub use config::*;
 use crate::module::ModuleProvider;
 use std::future::Future;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::pin::Pin;
 use std::fmt;
 
@@ -24,7 +24,7 @@ impl fmt::Display for ConfigProvider {
 
 pub fn config_provider(config_providers: Vec<ConfigProvider>) -> impl Fn(&ModuleProvider) -> Pin<Box<dyn Future<Output=Result<Config, ConfigError>>>>
 {
-    move |module_provider| {
+    move |_| {
         debug!("Register configuration manager module.");
         let config_files = config_providers.clone();
         Box::pin(async move {
