@@ -12,6 +12,7 @@ members = [
     "inspirer-actix-validator",
     "inspirer-actix-modules/database-sqlx",
     "inspirer-actix-modules/redis",
+    "inspirer-json-web-token",
 ]
 
 [dependencies]
