@@ -8,14 +8,14 @@ use serde::Serialize;
 #[derive(Default, Serialize, Deserialize, Debug, Clone)]
 pub struct PublicClaims {
     #[serde(skip_serializing_if = "Option::is_none")]
-    aud: Option<String>,
+    pub aud: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    iss: Option<String>,
+    pub iss: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    sub: Option<String>,
-    exp: usize,
+    pub sub: Option<String>,
+    pub exp: usize,
     #[serde(skip_serializing_if = "Option::is_none")]
-    nbf: Option<usize>,
+    pub nbf: Option<usize>,
 }
 
 impl PublicClaims {
