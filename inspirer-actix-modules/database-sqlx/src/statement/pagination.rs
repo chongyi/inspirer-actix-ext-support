@@ -5,8 +5,8 @@ const DEFAULT_PER_PAGE: u64 = 20;
 
 #[derive(Serialize, Deserialize, Copy, Clone, Debug)]
 pub struct Paginate {
-    page: u64,
-    per_page: u64,
+    pub page: u64,
+    pub per_page: u64,
 }
 
 impl Default for Paginate {
