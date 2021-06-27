@@ -1,5 +1,4 @@
-use proc_macro2::{TokenStream};
-use proc_macro2::Ident;
+use proc_macro2::TokenStream;
 
 pub fn expand_service_derive(
     input: &mut syn::DeriveInput,

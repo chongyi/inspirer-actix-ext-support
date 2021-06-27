@@ -1,5 +1,3 @@
-use std::ops::{Deref, DerefMut};
-
 #[derive(Serialize, Deserialize, AsRefStr, Debug)]
 #[serde(tag = "mode", content = "column")]
 pub enum Sort<T> {
