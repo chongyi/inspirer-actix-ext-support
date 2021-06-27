@@ -1,4 +1,5 @@
 const DEFAULT_PER_PAGE: u64 = 20;
+const DEFAULT_PAGE: u64 = 1;
 
 #[derive(Serialize, Deserialize, Copy, Clone, Debug)]
 pub struct Paginate {
@@ -8,16 +9,13 @@ pub struct Paginate {
 
 impl Default for Paginate {
     fn default() -> Self {
-        Paginate::new(DEFAULT_PER_PAGE)
+        Paginate::new(DEFAULT_PAGE, DEFAULT_PER_PAGE)
     }
 }
 
 impl Paginate {
-    pub fn new(per_page: u64) -> Self {
-        Paginate {
-            page: 1,
-            per_page,
-        }
+    pub fn new(page: u64, per_page: u64) -> Self {
+        Paginate { page, per_page }
     }
 
     pub fn validated(mut self) -> Self {
@@ -50,7 +48,7 @@ impl Paginate {
             }
         } else {
             Pagination {
-                paginate: Paginate::new(self.per_page),
+                paginate: self,
                 ..Pagination::default()
             }
         }
@@ -88,9 +86,7 @@ pub trait IntoPaginated<T> {
 
 impl<T> IntoPaginated<T> for Vec<(T, i64)> {
     fn raw_into(self, paginate: Option<Paginate>) -> Paginated<T> {
-        let total = self.first()
-            .map(|(_, total)| *total as u64)
-            .unwrap_or(0);
+        let total = self.first().map(|(_, total)| *total as u64).unwrap_or(0);
 
         Paginated {
             data: self.into_iter().map(|r| r.0).collect(),
