@@ -1,4 +1,4 @@
-#[derive(Serialize, Deserialize, AsRefStr, Debug)]
+#[derive(Serialize, Deserialize, AsRefStr, Debug, Clone)]
 #[serde(tag = "mode", content = "column")]
 pub enum Sort<T> {
     #[serde(rename = "asc")]
