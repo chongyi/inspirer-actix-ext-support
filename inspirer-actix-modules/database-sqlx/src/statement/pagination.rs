@@ -1,6 +1,3 @@
-use sqlx::FromRow;
-use sqlx::mysql::MySqlRow;
-
 const DEFAULT_PER_PAGE: u64 = 20;
 
 #[derive(Serialize, Deserialize, Copy, Clone, Debug)]

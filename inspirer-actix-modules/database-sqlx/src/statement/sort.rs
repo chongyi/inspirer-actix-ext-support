@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-#[derive(Serialize, Deserialize, AsRefStr)]
+#[derive(Serialize, Deserialize, AsRefStr, Debug)]
 #[serde(tag = "mode", content = "column")]
 pub enum Sort<T> {
     #[serde(rename = "asc")]
@@ -11,27 +11,7 @@ pub enum Sort<T> {
     Desc(T),
 }
 
-pub struct SortStatement<T> (Vec<Sort<T>>);
-
-impl<T> Default for SortStatement<T> {
-    fn default() -> Self {
-        SortStatement (vec![])
-    }
-}
-
-impl<T> Deref for SortStatement<T> {
-    type Target = Vec<Sort<T>>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl<T> DerefMut for SortStatement<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
+pub type SortStatement<T> = Vec<Sort<T>>;
 
 pub mod mysql {
     use super::{Sort, SortStatement};
@@ -40,7 +20,7 @@ pub mod mysql {
 
     impl<T: AsRef<str>> IntoStatement<MySql> for SortStatement<T> {
         fn statement(&self) -> String {
-            self.0.iter()
+            self.iter()
                 .map(|option| match option {
                     Sort::Asc(field) => format!("{} asc", field.as_ref()),
                     Sort::Desc(field) => format!("{} desc", field.as_ref()),
@@ -65,6 +45,15 @@ mod tests {
     use super::*;
     use crate::statement::IntoStatement;
 
+    #[derive(Serialize, Deserialize, AsRefStr, PartialEq, Debug)]
+    #[serde(rename_all = "snake_case")]
+    pub enum SortColumn {
+        #[strum(serialize = "content.id")]
+        Id,
+        #[strum(serialize = "content.create_time")]
+        CreateTime,
+    }
+
     #[test]
     fn test_as_ref() {
         assert_eq!("asc", Sort::Asc(()).as_ref());
@@ -73,20 +62,45 @@ mod tests {
 
     #[test]
     fn test_statement() {
-        #[derive(Serialize, Deserialize, AsRefStr)]
-        #[serde(rename_all = "snake_case")]
-        pub enum SortColumn {
-            #[strum(serialize = "id")]
-            Id,
-            #[strum(serialize = "create_time")]
-            CreateTime
-        }
-
         let mut statement = SortStatement::<SortColumn>::default();
         statement.push(Sort::Desc(SortColumn::Id));
         statement.push(Sort::Asc(SortColumn::CreateTime));
 
-        assert_eq!("id desc,create_time asc", statement.statement());
-        assert_eq!("order by id desc,create_time asc", statement.full_statement());
+        assert_eq!(
+            "content.id desc,content.create_time asc",
+            statement.statement()
+        );
+        assert_eq!(
+            "order by content.id desc,content.create_time asc",
+            statement.full_statement()
+        );
+    }
+
+    #[test]
+    fn test_serialize() {
+        let mut statement = SortStatement::<SortColumn>::default();
+        statement.push(Sort::Desc(SortColumn::Id));
+        statement.push(Sort::Asc(SortColumn::CreateTime));
+
+        #[derive(Serialize, Deserialize, Debug)]
+        pub struct Options {
+            sorts: SortStatement<SortColumn>,
+        }
+
+        assert_eq!(
+            "sorts[0][mode]=desc&sorts[0][column]=id&sorts[1][mode]=asc&sorts[1][column]=create_time", 
+            serde_qs::to_string(&Options { sorts: statement}).unwrap()
+        );
+
+        let a:Sort<SortColumn> = serde_qs::from_str("mode=desc&column=id").unwrap();
+        if let Sort::Desc(inner) = a {
+            assert_eq!("content.id", inner.as_ref());
+        } else {
+            assert!(false);
+        }
+
+        let b = serde_qs::from_str::<Options>("sorts[0][mode]=desc&sorts[0][column]=id&sorts[1][mode]=asc&sorts[1][column]=create_time");
+        assert!(b.is_ok());
+        println!("{:?}", b);
     }
 }

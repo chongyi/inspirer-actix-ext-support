@@ -166,7 +166,7 @@ pub struct GetBy<T, C> {
 impl<T> Get<T> {
     /// 条件读取
     ///
-    /// ```
+    /// ```ignore
     /// Get::<Target>::by(condition).run(executor).await;
     /// ```
     pub fn by<C>(condition: C) -> GetBy<T, C> {

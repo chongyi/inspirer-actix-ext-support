@@ -12,6 +12,9 @@ serde = { version = "1.0", features = ["derive"] }
 async-trait = "0.1"
 strum = { version = "0.21", features = ["derive"] }
 
+[dev-dependencies]
+serde_qs = "0.8"
+
 [features]
 default = ["runtime-actix-rustls"]
 runtime-actix-rustls = ["sqlx/runtime-actix-rustls"]
