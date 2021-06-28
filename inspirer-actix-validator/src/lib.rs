@@ -12,6 +12,7 @@ use actix_web::dev::Payload;
 use actix_web::web::{Form, Json, Path, Query};
 use futures::future::{err, Future, FutureExt, LocalBoxFuture, ok, TryFutureExt};
 use serde::de::DeserializeOwned;
+use serde_qs::actix::QsQuery;
 pub use validator::*;
 
 pub use crate::error::Error;
@@ -114,3 +115,4 @@ validator!(Json);
 validator!(Query);
 validator!(Path);
 validator!(Form);
+validator!(QsQuery);
